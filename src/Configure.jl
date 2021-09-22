@@ -59,7 +59,7 @@ end
 
 """ Move custom operators and loss functions to workers, if undefined """
 function move_functions_to_workers(procs, options::Options, dataset::Dataset{T}) where {T}
-    for function_set=1:3
+    for function_set=1:5
         if function_set == 1
             ops = options.unaops
             nargs = 1
@@ -67,6 +67,12 @@ function move_functions_to_workers(procs, options::Options, dataset::Dataset{T})
             ops = options.binops
             nargs = 2
         elseif function_set == 3
+            ops = options.diff_unaops
+            nargs = 1
+        elseif function_set == 4
+            ops = options.diff_binops
+            nargs = 2
+        elseif function_set == 5
             if typeof(options.loss) <: SupervisedLoss
                 continue
             end

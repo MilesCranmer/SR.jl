@@ -1,6 +1,7 @@
 using FromFile
 using Distributed
 using LossFunctions
+using Zygote
 #TODO - eventually move some of these
 # into the SR call itself, rather than
 # passing huge options at once.
@@ -100,10 +101,12 @@ function unaopmap(op)
     return op
 end
 
-struct Options{A,B,C<:Union{SupervisedLoss,Function}}
+struct Options{A,B,dA,dB,C<:Union{SupervisedLoss,Function}}
 
     binops::A
     unaops::B
+    diff_binops::dA
+    diff_unaops::dB
     bin_constraints::Array{Tuple{Int,Int}, 1}
     una_constraints::Array{Int, 1}
     ns::Int
@@ -353,6 +356,22 @@ function Options(;
     binary_operators = map(binopmap, binary_operators)
     unary_operators = map(unaopmap, unary_operators)
 
+    diff_binary_operators = Any[]
+    diff_unary_operators = Any[]
+
+    for op in binary_operators
+        diff_op(x,y) = gradient(op,x,y)
+        push!(diff_binary_operators, diff_op)
+    end
+
+    for op in unary_operators
+       diff_op(x) = gradient(op,x)[1]
+       push!(diff_unary_operators, diff_op)
+    end
+
+    diff_binary_operators = Tuple(diff_binary_operators)
+    diff_unary_operators = Tuple(diff_unary_operators)
+
     mutationWeights = map((x,)->convert(Float64, x), mutationWeights)
     if length(mutationWeights) != 8
         error("Not the right number of mutation probabilities given")
@@ -391,7 +410,7 @@ function Options(;
         recorder = haskey(ENV, "PYSR_RECORDER") && (ENV["PYSR_RECORDER"] == "1")
     end
 
-    options = Options{typeof(binary_operators),typeof(unary_operators), typeof(loss)}(binary_operators, unary_operators, bin_constraints, una_constraints, ns, parsimony, alpha, maxsize, maxdepth, fast_cycle, migration, hofMigration, fractionReplacedHof, shouldOptimizeConstants, hofFile, npopulations, perturbationFactor, annealing, batching, batchSize, mutationWeights, warmupMaxsizeBy, useFrequency, npop, ncyclesperiteration, fractionReplaced, topn, verbosity, probNegate, nuna, nbin, seed, loss, progress, terminal_width, optimizer_algorithm, optimize_probability, optimizer_nrestarts, optimizer_iterations, recorder, recorder_file, probPickFirst)
+    options = Options{typeof(binary_operators),typeof(unary_operators), typeof(diff_binary_operators), typeof(diff_unary_operators), typeof(loss)}(binary_operators, unary_operators, diff_binary_operators, diff_unary_operators, bin_constraints, una_constraints, ns, parsimony, alpha, maxsize, maxdepth, fast_cycle, migration, hofMigration, fractionReplacedHof, shouldOptimizeConstants, hofFile, npopulations, perturbationFactor, annealing, batching, batchSize, mutationWeights, warmupMaxsizeBy, useFrequency, npop, ncyclesperiteration, fractionReplaced, topn, verbosity, probNegate, nuna, nbin, seed, loss, progress, terminal_width, optimizer_algorithm, optimize_probability, optimizer_nrestarts, optimizer_iterations, recorder, recorder_file, probPickFirst)
     return options
 end
 

@@ -51,6 +51,12 @@ macro return_on_false(flag, retval)
     end)
 end
 
+macro return_on_false2(flag, retval, retval2)
+    :(if !$(esc(flag))
+          return ($(esc(retval)), $(esc(retval2)), false)
+    end)
+end
+
 function next_worker(worker_assignment::Dict{Tuple{Int,Int}, Int}, procs::Vector{Int})::Int
     job_counts = Dict(proc=>0 for proc in procs)
     for (key, value) in worker_assignment

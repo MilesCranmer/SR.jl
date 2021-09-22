@@ -6,17 +6,17 @@ using LossFunctions
 @from "EvaluateEquation.jl" import evalTreeArray, differentiableEvalTreeArray
 
 
-function Loss(x::AbstractArray{T}, y::AbstractArray{T}, options::Options{A,B,C})::T where {T<:Real,A,B,C<:SupervisedLoss}
+function Loss(x::AbstractArray{T}, y::AbstractArray{T}, options::Options{A,B,dA,dB,C})::T where {T<:Real,A,B,dA,dB,C<:SupervisedLoss}
     value(options.loss, y, x, AggMode.Mean())
 end
-function Loss(x::AbstractArray{T}, y::AbstractArray{T}, options::Options{A,B,C})::T where {T<:Real,A,B,C<:Function}
+function Loss(x::AbstractArray{T}, y::AbstractArray{T}, options::Options{A,B,dA,dB,C})::T where {T<:Real,A,B,dA,dB,C<:Function}
     sum(options.loss.(x, y))/length(y)
 end
 
-function Loss(x::AbstractArray{T}, y::AbstractArray{T}, w::AbstractArray{T}, options::Options{A,B,C})::T where {T<:Real,A,B,C<:SupervisedLoss}
+function Loss(x::AbstractArray{T}, y::AbstractArray{T}, w::AbstractArray{T}, options::Options{A,B,dA,dB,C})::T where {T<:Real,A,B,dA,dB,C<:SupervisedLoss}
     value(options.loss, y, x, AggMode.WeightedMean(w))
 end
-function Loss(x::AbstractArray{T}, y::AbstractArray{T}, w::AbstractArray{T}, options::Options{A,B,C})::T where {T<:Real,A,B,C<:Function}
+function Loss(x::AbstractArray{T}, y::AbstractArray{T}, w::AbstractArray{T}, options::Options{A,B,dA,dB,C})::T where {T<:Real,A,B,dA,dB,C<:Function}
     sum(options.loss.(x, y, w))/sum(w)
 end
 

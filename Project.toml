@@ -8,6 +8,7 @@ Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 FromFile = "ff7dd447-1dcb-4ce3-b8ac-22a812192de7"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 LineSearches = "d3d80556-e9d4-5f37-9878-2ab0fcc64255"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 LossFunctions = "30fc2ffe-d236-52d8-8643-a9d8f7c094a7"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
@@ -16,6 +17,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
 FromFile = "0.1.0"
@@ -27,6 +29,7 @@ Pkg = "1"
 Reexport = "1"
 SpecialFunctions = "0.10.1, 1"
 SymbolicUtils = "0.13"
+Zygote = "0.6"
 julia = "1.5"
 
 [extras]

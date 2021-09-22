@@ -119,7 +119,6 @@ function countConstants(tree::Node)::Int
     end
 end
 
-
 # Get all the constants from a tree
 function getConstants(tree::Node)::AbstractVector{CONST_TYPE}
     if tree.degree == 0
@@ -148,5 +147,41 @@ function setConstants(tree::Node, constants::AbstractVector{T}) where {T<:Real}
         numberLeft = countConstants(tree.l)
         setConstants(tree.l, constants)
         setConstants(tree.r, constants[numberLeft+1:end])
+    end
+end
+
+
+## Assign index to nodes of a tree
+mutable struct NodeIndex
+    constant_index::Int
+    l::NodeIndex
+    r::NodeIndex
+
+    NodeIndex() = new()
+end
+
+function indexConstants(tree::Node, left_index::Int)::NodeIndex
+    index_tree = NodeIndex()
+    indexConstants(tree, index_tree, left_index)
+    return index_tree
+end
+
+# Count how many constants to the left of this node, and put them in a tree
+function indexConstants(tree::Node, index_tree::NodeIndex, left_index::Int)
+    if tree.degree == 0
+        if tree.constant
+            index_tree.constant_index = left_index + 1
+        end
+    elseif tree.degree == 1
+        index_tree.constant_index = countConstants(tree.l)
+        index_tree.l = NodeIndex()
+        indexConstants(tree.l, index_tree.l, left_index)
+    else
+        index_tree.l = NodeIndex()
+        index_tree.r = NodeIndex()
+        indexConstants(tree.l, index_tree.l, left_index)
+        index_tree.constant_index = countConstants(tree.l)
+        left_index_here = left_index + index_tree.constant_index
+        indexConstants(tree.r, index_tree.r, left_index_here)
     end
 end
