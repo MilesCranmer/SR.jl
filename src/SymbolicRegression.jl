@@ -321,7 +321,7 @@ using .SearchUtilsModule:
     logging_callback!
 using .LoggingModule: AbstractSRLogger, SRLogger, get_logger
 using .TemplateExpressionModule: TemplateExpression, TemplateStructure
-using .TemplateExpressionModule: TemplateExpression, TemplateStructure, ValidVector
+using .TemplateExpressionModule: ValidVector
 using .ComposableExpressionModule: ComposableExpression
 using .ExpressionBuilderModule: embed_metadata, strip_metadata
 

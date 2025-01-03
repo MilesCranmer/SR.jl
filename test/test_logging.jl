@@ -1,4 +1,4 @@
-@testitem "Test logging" tags = [:part1, :integration] begin
+@testitem "Test logging" tags = [:part2, :integration] begin
     using SymbolicRegression
     using TensorBoardLogger: TensorBoardLogger, TBLogger
     using Logging: Logging, SimpleLogger
@@ -45,7 +45,7 @@
     s = String(take!(buf))
     @test occursin(r"search\s*\n\s*│\s*data\s*=\s*", s)
 end
-@testitem "Test convex hull calculation" tags = [:part1] begin
+@testitem "Test convex hull calculation" tags = [:part2] begin
     using SymbolicRegression.LoggingModule: convex_hull, convex_hull_area
 
     # Create a Pareto front with an interior point that should be ignored

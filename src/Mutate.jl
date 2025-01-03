@@ -194,12 +194,13 @@ function next_generation(
     #############################################
     # Mutations
     #############################################
-    local tree
+    # local tree
+    rtree = Ref{N}()
     while (!successful_mutation) && attempts < max_attempts
-        tree = copy_into!(node_storage, member.tree)
+        rtree[] = copy_into!(node_storage, member.tree)
 
         mutation_result = _dispatch_mutations!(
-            tree,
+            rtree[],
             member,
             mutation_choice,
             options.mutation_weights,
@@ -227,11 +228,13 @@ function next_generation(
                 mutation_result.tree isa N,
                 "Mutation result must return a tree if `return_immediately` is false"
             )
-            tree = mutation_result.tree::N
-            successful_mutation = check_constraints(tree, options, curmaxsize)
+            rtree[] = mutation_result.tree::N
+            successful_mutation = check_constraints(rtree[], options, curmaxsize)
             attempts += 1
         end
     end
+
+    tree = rtree[]
 
     if !successful_mutation
         @recorder begin
@@ -683,7 +686,7 @@ function crossover_generation(
     end
 
     baby1 = PopMember(
-        child_tree1,
+        child_tree1::AbstractExpression,
         afterScore1,
         afterLoss1,
         options,
@@ -692,7 +695,7 @@ function crossover_generation(
         deterministic=options.deterministic,
     )::P
     baby2 = PopMember(
-        child_tree2,
+        child_tree2::AbstractExpression,
         afterScore2,
         afterLoss2,
         options,

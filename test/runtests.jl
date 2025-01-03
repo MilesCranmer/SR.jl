@@ -123,7 +123,7 @@ end
 end
 
 # TODO: This is the slowest test.
-@testitem "Running parameterized function example." tags = [:part2] begin
+@testitem "Running parameterized function example." tags = [:part1] begin
     ENV["SYMBOLIC_REGRESSION_IS_TESTING"] = "true"
     include("../examples/parameterized_function.jl")
 end
@@ -162,6 +162,7 @@ include("test_logging.jl")
 include("test_pretty_printing.jl")
 include("test_expression_builder.jl")
 include("test_composable_expression.jl")
+include("test_parametric_template_expressions.jl")
 
 @testitem "Aqua tests" tags = [:part2, :aqua] begin
     include("test_aqua.jl")

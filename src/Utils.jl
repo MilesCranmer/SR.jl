@@ -285,4 +285,15 @@ function dump_buffer(buffer::AnnotatedIOBuffer)
     return AnnotatedString(dump_buffer(buffer.io), buffer.annotations)
 end
 
+struct FixKws{F,KWS}
+    f::F
+    kws::KWS
+end
+function FixKws(f::F; kws...) where {F}
+    return FixKws{F,typeof(kws)}(f, kws)
+end
+function (f::FixKws{F,KWS})(args::Vararg{Any,N}) where {F,KWS,N}
+    return f.f(args...; f.kws...)
+end
+
 end

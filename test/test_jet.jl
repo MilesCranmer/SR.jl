@@ -1,7 +1,6 @@
-if !(VERSION >= v"1.10.0" && VERSION < v"1.11.0-DEV.0")
+if !(VERSION >= v"1.10.0" && VERSION < v"1.12.0-DEV.0")
     exit(0)
 end
-# TODO: Check why is breaking on 1.11.0
 
 dir = mktempdir()
 

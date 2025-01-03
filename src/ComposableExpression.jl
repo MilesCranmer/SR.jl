@@ -58,10 +58,11 @@ struct ComposableExpression{
 end
 
 @inline function ComposableExpression(
-    tree::AbstractExpressionNode{T}; metadata...
+    tree::AbstractExpressionNode{T};
+    operators::Union{AbstractOperatorEnum,Nothing}=nothing,
+    variable_names::Union{AbstractVector{<:AbstractString},Nothing}=nothing,
 ) where {T}
-    d = (; metadata...)
-    return ComposableExpression(tree, Metadata(d))
+    return ComposableExpression(tree, Metadata((; operators, variable_names)))
 end
 
 @unstable DE.constructorof(::Type{<:ComposableExpression}) = ComposableExpression
@@ -113,12 +114,18 @@ end
 function CO.count_constants_for_optimization(ex::AbstractComposableExpression)
     return CO.count_constants_for_optimization(convert(Expression, ex))
 end
+
+struct PreallocatedComposableExpression{N}
+    tree::N
+end
 function DE.allocate_container(
     prototype::ComposableExpression, n::Union{Nothing,Integer}=nothing
 )
-    return (; tree=DE.allocate_container(get_contents(prototype), n))
+    return PreallocatedComposableExpression(
+        DE.allocate_container(get_contents(prototype), n)
+    )
 end
-function DE.copy_into!(dest::NamedTuple, src::ComposableExpression)
+function DE.copy_into!(dest::PreallocatedComposableExpression, src::ComposableExpression)
     new_tree = DE.copy_into!(dest.tree, get_contents(src))
     return DE.with_contents(src, new_tree)
 end

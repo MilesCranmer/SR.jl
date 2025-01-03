@@ -1,4 +1,4 @@
-@testitem "Generic interface tests" tags = [:part1] begin
+@testitem "Generic interface tests" tags = [:part3] begin
     using SymbolicRegression
     using MLJTestInterface: MLJTestInterface as MTI
     include("test_params.jl")
