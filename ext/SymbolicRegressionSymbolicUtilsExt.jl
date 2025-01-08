@@ -2,7 +2,7 @@ module SymbolicRegressionSymbolicUtilsExt
 
 using SymbolicUtils: Symbolic
 using SymbolicRegression: AbstractExpressionNode, AbstractExpression, Node, Options
-using SymbolicRegression.MLJInterfaceModule: AbstractSRRegressor, get_options
+using SymbolicRegression.MLJInterfaceModule: AbstractSymbolicRegressor, get_options
 using DynamicExpressions: get_tree, get_operators
 
 import SymbolicRegression: node_to_symbolic, symbolic_to_node
@@ -18,7 +18,9 @@ function node_to_symbolic(
     return node_to_symbolic(get_tree(tree), get_operators(tree, options); kws...)
 end
 function node_to_symbolic(
-    tree::Union{AbstractExpressionNode,AbstractExpression}, m::AbstractSRRegressor; kws...
+    tree::Union{AbstractExpressionNode,AbstractExpression},
+    m::AbstractSymbolicRegressor;
+    kws...,
 )
     return node_to_symbolic(tree, get_options(m); kws...)
 end
@@ -31,7 +33,7 @@ Convert a SymbolicUtils.jl expression to SymbolicRegression.jl's `Node` type.
 function symbolic_to_node(eqn::Symbolic, options::Options; kws...)
     return symbolic_to_node(eqn, options.operators; kws...)
 end
-function symbolic_to_node(eqn::Symbolic, m::AbstractSRRegressor; kws...)
+function symbolic_to_node(eqn::Symbolic, m::AbstractSymbolicRegressor; kws...)
     return symbolic_to_node(eqn, get_options(m); kws...)
 end
 
@@ -46,7 +48,7 @@ end
 function Base.convert(
     ::Type{Symbolic},
     tree::Union{AbstractExpressionNode,AbstractExpression},
-    m::AbstractSRRegressor;
+    m::AbstractSymbolicRegressor;
     kws...,
 )
     return convert(Symbolic, tree, get_options(m); kws...)
@@ -58,7 +60,7 @@ function Base.convert(
     return convert(N, x, options.operators; kws...)
 end
 function Base.convert(
-    ::Type{N}, x::Union{Number,Symbolic}, m::AbstractSRRegressor; kws...
+    ::Type{N}, x::Union{Number,Symbolic}, m::AbstractSymbolicRegressor; kws...
 ) where {N<:Union{AbstractExpressionNode,AbstractExpression}}
     return convert(N, x, get_options(m); kws...)
 end
