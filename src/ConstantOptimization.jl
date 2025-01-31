@@ -2,7 +2,7 @@ module ConstantOptimizationModule
 
 using LineSearches: LineSearches
 using Optim: Optim
-using ADTypes: AbstractADType, AutoEnzyme
+using ADTypes: AbstractADType, AutoEnzyme, AutoZygote
 using DifferentiationInterface: value_and_gradient
 using DynamicExpressions:
     AbstractExpression,
@@ -124,8 +124,18 @@ GradEvaluator(f::F, backend::AD) where {F,AD} = GradEvaluator(f, backend, nothin
 function (g::GradEvaluator{<:Any,AD})(_, G, x::AbstractVector) where {AD}
     AD isa AutoEnzyme && error("Please load the `Enzyme.jl` package.")
     set_scalar_constants!(g.f.tree, x, g.f.refs)
-    (val, grad) = value_and_gradient(g.backend, g.f.tree) do tree
-        eval_loss(tree, g.f.dataset, g.f.options; regularization=false, idx=g.f.idx)
+    (val, grad) = try
+        value_and_gradient(g.backend, g.f.tree) do tree
+            eval_loss(tree, g.f.dataset, g.f.options; regularization=false, idx=g.f.idx)
+        end
+    catch e
+        (g.backend isa AutoZygote && occursin(r"ZygoteNothingError", string(e))) || throw(e)
+        (
+            eval_loss(
+                g.f.tree, g.f.dataset, g.f.options; regularization=false, idx=g.f.idx
+            ),
+            nothing,
+        )
     end
     if G !== nothing && grad !== nothing
         G .= extract_gradient(grad, g.f.tree)
